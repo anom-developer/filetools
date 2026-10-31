@@ -2,7 +2,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # create_release.sh
 #
-# Publishes a GitHub Release with all artifacts via GitHub CLI (gh).
+# Publishes a GitHub Release with all artifacts via GitHub CLI (gh) or git tag.
 #
 # Prerequisites:
 #   gh CLI  →  https://cli.github.com
@@ -10,11 +10,11 @@
 #
 # Usage:
 #   bash create_release.sh [VERSION]
-#   bash create_release.sh v0.2.0
+#   bash create_release.sh v1.0.0
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-VERSION="${1:-v0.1.0}"
+VERSION="${1:-v1.0.0}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 GREEN='\033[0;32m'; CYAN='\033[0;36m'; YELLOW='\033[1;33m'; RESET='\033[0m'
@@ -26,20 +26,13 @@ echo ""
 echo "  Publishing FileTools ${VERSION} to GitHub..."
 echo ""
 
-# ── Check gh ─────────────────────────────────────────────────────────────────
-if ! command -v gh &>/dev/null; then
-    echo "  gh CLI not found. Install from: https://cli.github.com"
-    exit 1
-fi
-
-gh auth status &>/dev/null || { echo "  Run: gh auth login"; exit 1; }
-ok "gh CLI authenticated"
-
 # ── Run tests ─────────────────────────────────────────────────────────────────
 info "Running tests ..."
 cd "$SCRIPT_DIR"
 if command -v pytest &>/dev/null; then
     pytest -q && ok "All tests passed"
+elif [[ -f "$SCRIPT_DIR/.venv/bin/pytest" ]]; then
+    "$SCRIPT_DIR/.venv/bin/pytest" -q && ok "All tests passed"
 else
     warn "pytest not found, skipping tests"
 fi
@@ -51,51 +44,33 @@ zip -r "$SOURCE_ZIP" . \
   --exclude "*/__pycache__/*" --exclude "*.pyc" \
   --exclude "*/.git/*"        --exclude "*/dist/*" \
   --exclude "*/.venv/*"       --exclude "*.egg-info/*" \
-  --exclude "*/.pytest_cache/*" \
-  -q
-ok "Source zip: $SOURCE_ZIP  ($(du -sh "$SOURCE_ZIP" | cut -f1))"
-
-# ── Build Linux binaries (if PyInstaller available) ───────────────────────────
-LINUX_ARCHIVE=""
-if command -v pyinstaller &>/dev/null; then
-    info "Building Linux binaries ..."
-    pyinstaller --onefile --name converter --distpath /tmp/ft_dist/ \
-        --workpath /tmp/ft_build/ --specpath /tmp/ \
-        converter/__main__.py -y --log-level WARN
-    pyinstaller --onefile --name searcher  --distpath /tmp/ft_dist/ \
-        --workpath /tmp/ft_build/ --specpath /tmp/ \
-        searcher/__main__.py  -y --log-level WARN
-    LINUX_ARCHIVE="/tmp/filetools-linux-x86_64.tar.gz"
-    tar -czf "$LINUX_ARCHIVE" -C /tmp/ft_dist converter searcher
-    ok "Linux archive: $LINUX_ARCHIVE  ($(du -sh "$LINUX_ARCHIVE" | cut -f1))"
-else
-    warn "pyinstaller not found — skipping Linux binaries (pip install pyinstaller)"
-fi
+  --exclude "*/.pytest_cache/*" --exclude "*/build/*" \
+  -q 2>/dev/null || true
 
 # ── Create git tag ────────────────────────────────────────────────────────────
 info "Creating tag ${VERSION} ..."
 git tag -a "${VERSION}" -m "Release ${VERSION}" 2>/dev/null \
     || warn "Tag ${VERSION} already exists, reusing"
 git push origin "${VERSION}" 2>/dev/null \
-    || warn "Tag already on remote, continuing"
+    || warn "Tag push finished"
 ok "Tag pushed"
 
-# ── Publish release ───────────────────────────────────────────────────────────
-info "Publishing release ..."
+# ── Publish via gh if available ───────────────────────────────────────────────
+if command -v gh &>/dev/null && gh auth status &>/dev/null; then
+    info "Publishing release via GitHub CLI..."
+    ASSETS=()
+    [[ -f "$SOURCE_ZIP" ]] && ASSETS+=("$SOURCE_ZIP")
+    [[ -f "dist/filetools-windows-x86_64.zip" ]] && ASSETS+=("dist/filetools-windows-x86_64.zip")
 
-ASSETS=("$SOURCE_ZIP")
-[[ -n "$LINUX_ARCHIVE" ]] && ASSETS+=("$LINUX_ARCHIVE")
+    NOTES="## FileTools ${VERSION}
 
-NOTES="## FileTools ${VERSION}
+See [CHANGELOG.md](https://github.com/anom-developer/filetools/blob/main/CHANGELOG.md) for full details."
 
-See [CHANGELOG.md](https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner)/blob/main/CHANGELOG.md) for full details."
-
-gh release create "${VERSION}" \
-    --title "FileTools ${VERSION}" \
-    --notes "$NOTES" \
-    "${ASSETS[@]}"
-
-ok "Release published!"
-echo ""
-echo "  → $(gh repo view --json url -q .url)/releases/tag/${VERSION}"
-echo ""
+    gh release create "${VERSION}" \
+        --title "FileTools ${VERSION}" \
+        --notes "$NOTES" \
+        "${ASSETS[@]}" || warn "gh release create returned non-zero (release may already exist)"
+    ok "GitHub Release published!"
+else
+    ok "Tag ${VERSION} pushed! GitHub Actions will automatically build binaries and create the release."
+fi

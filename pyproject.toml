@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "filetools-cli"
-version = "0.1.0"
+version = "1.0.0"
 description = "CLI toolkit: file format converter and recursive file searcher"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -12,7 +12,7 @@ requires-python = ">=3.8"
 keywords = ["cli", "converter", "searcher", "files", "pdf", "image", "json", "csv"]
 
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: End Users/Desktop",
@@ -24,6 +24,8 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
@@ -40,28 +42,30 @@ dev = [
 ]
 
 [project.scripts]
+filetools = "filetools.cli:main"
 converter = "converter.cli:main"
 searcher  = "searcher.cli:main"
 
 [project.urls]
-Homepage   = "https://github.com/your-username/filetools"
-Repository = "https://github.com/your-username/filetools"
-Issues     = "https://github.com/your-username/filetools/issues"
-Changelog  = "https://github.com/your-username/filetools/blob/main/CHANGELOG.md"
+Homepage   = "https://github.com/anom-developer/filetools"
+Repository = "https://github.com/anom-developer/filetools"
+Issues     = "https://github.com/anom-developer/filetools/issues"
+Changelog  = "https://github.com/anom-developer/filetools/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
-include = ["converter*", "searcher*"]
+include = ["converter*", "searcher*", "filetools*"]
 
 [tool.setuptools.package-data]
 "converter" = ["py.typed"]
 "searcher"  = ["py.typed"]
+"filetools" = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts   = "-v --tb=short"
 
 [tool.coverage.run]
-source = ["converter", "searcher"]
+source = ["converter", "searcher", "filetools"]
 omit   = ["*/tests/*", "*/__main__.py"]
 
 [tool.coverage.report]

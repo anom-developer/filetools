@@ -40,7 +40,7 @@ install.bat            # Windows
 
 ### Via pip
 ```bash
-pip install git+https://github.com/your-username/filetools.git
+pip install git+https://github.com/anom-developer/filetools.git
 ```
 
 ---
@@ -53,4 +53,4 @@ pip install git+https://github.com/your-username/filetools.git
 
 ---
 
-**Full changelog:** [CHANGELOG.md](https://github.com/AceAnomDev/filetools/blob/main/CHANGELOG.md)
+**Full changelog:** [CHANGELOG.md](https://github.com/anom-developer/filetools/blob/main/CHANGELOG.md)

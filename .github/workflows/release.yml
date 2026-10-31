@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch:
 
 jobs:
   # ── 1. Tests ─────────────────────────────────────────────────────────────────
@@ -31,9 +32,10 @@ jobs:
       - name: Install + build
         run: |
           pip install -e . pyinstaller
+          pyinstaller --onefile --name filetools --distpath dist/ filetools/__main__.py
           pyinstaller --onefile --name converter --distpath dist/ converter/__main__.py
           pyinstaller --onefile --name searcher  --distpath dist/ searcher/__main__.py
-          tar -czf filetools-linux-x86_64.tar.gz -C dist converter searcher
+          tar -czf filetools-linux-x86_64.tar.gz -C dist filetools converter searcher
       - uses: actions/upload-artifact@v4
         with:
           name: linux
@@ -52,13 +54,14 @@ jobs:
       - name: Install + build
         run: |
           pip install -e . pyinstaller
+          pyinstaller --onefile --name filetools --distpath dist\ filetools\__main__.py
           pyinstaller --onefile --name converter --distpath dist\ converter\__main__.py
           pyinstaller --onefile --name searcher  --distpath dist\ searcher\__main__.py
       - name: Package
         shell: pwsh
         run: |
-          Copy-Item install.bat dist\
-          Compress-Archive -Path dist\converter.exe, dist\searcher.exe, dist\install.bat `
+          Copy-Item install.bat, README.md, LICENSE dist\
+          Compress-Archive -Path dist\filetools.exe, dist\converter.exe, dist\searcher.exe, dist\install.bat, dist\README.md, dist\LICENSE `
             -DestinationPath filetools-windows-x86_64.zip
       - uses: actions/upload-artifact@v4
         with:
@@ -78,9 +81,10 @@ jobs:
       - name: Install + build
         run: |
           pip install -e . pyinstaller
+          pyinstaller --onefile --name filetools --distpath dist/ filetools/__main__.py
           pyinstaller --onefile --name converter --distpath dist/ converter/__main__.py
           pyinstaller --onefile --name searcher  --distpath dist/ searcher/__main__.py
-          tar -czf filetools-macos-x86_64.tar.gz -C dist converter searcher
+          tar -czf filetools-macos-x86_64.tar.gz -C dist filetools converter searcher
       - uses: actions/upload-artifact@v4
         with:
           name: macos
@@ -110,15 +114,21 @@ jobs:
             --exclude "*/__pycache__/*" --exclude "*.pyc" \
             --exclude "*/.git/*"        --exclude "*/dist/*" \
             --exclude "*/.venv/*"       --exclude "*.egg-info/*" \
-            --exclude "*/.pytest_cache/*"
+            --exclude "*/.pytest_cache/*" --exclude "*/build/*"
 
       - name: Extract tag version
         id: tag
-        run: echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=v1.0.0" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.tag.outputs.version }}
           name: "FileTools ${{ steps.tag.outputs.version }}"
           body: |
             See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.

@@ -17,5 +17,8 @@ htmlcov/
 *.log
 *.tmp
 *.temp
+*.spec
+*.zip
+*.tar.gz
 .DS_Store
 Thumbs.db

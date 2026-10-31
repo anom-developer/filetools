@@ -20,7 +20,7 @@ echo ""
 
 # ── 1. Найти Python 3.8+ ───────────────────────────────────────────────────────
 PYTHON=""
-for candidate in python3.12 python3.11 python3.10 python3.9 python3.8 python3 python; do
+for candidate in python3.14 python3.13 python3.12 python3.11 python3.10 python3.9 python3.8 python3 python; do
     if command -v "$candidate" &>/dev/null; then
         if "$candidate" -c "import sys; exit(0 if sys.version_info >= (3,8) else 1)" 2>/dev/null; then
             PYTHON="$candidate"
@@ -134,5 +134,5 @@ echo "  ./searcher --content 'TODO' . --ext .py"
 echo "  ./searcher --regex 'report_[0-9]+' ./docs"
 echo ""
 echo "  Or activate: source .venv/bin/activate"
-echo "  Docs:        https://github.com/your-username/filetools"
+echo "  Docs:        https://github.com/anom-developer/filetools"
 echo ""

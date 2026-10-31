@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.10", "3.12"]
+        python-version: ["3.8", "3.10", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v4
@@ -32,4 +32,4 @@ jobs:
 
       - name: Coverage report (3.12 only)
         if: matrix.python-version == '3.12'
-        run: pytest --cov=converter --cov=searcher --cov-report=term-missing
+        run: pytest --cov=converter --cov=searcher --cov=filetools --cov-report=term-missing

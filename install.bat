@@ -9,18 +9,50 @@ echo ║   Converter + Searcher CLI utilities    ║
 echo ╚══════════════════════════════════════════╝
 echo.
 
-:: ── 1. Найти Python (обходим Microsoft Store) ─────────────────────────────────
+:: ── 1. Найти Python ──────────────────────────────────────────────────────────
 set PYTHON=
 
+:: Сначала проверяем команду py или python в PATH
+py -3 --version >nul 2>&1
+if not errorlevel 1 (
+    for /f "tokens=*" %%P in ('py -3 -c "import sys; print(sys.executable)" 2^>nul') do (
+        if exist "%%P" (
+            set PYTHON=%%P
+            goto :found_python
+        )
+    )
+)
+
+python -c "import sys; sys.exit(0 if sys.version_info >= (3,8) else 1)" >nul 2>&1
+if not errorlevel 1 (
+    for /f "tokens=*" %%P in ('python -c "import sys; print(sys.executable)" 2^>nul') do (
+        if exist "%%P" (
+            set PYTHON=%%P
+            goto :found_python
+        )
+    )
+)
+
 for %%P in (
+    "%LOCALAPPDATA%\Programs\Python\Python314\python.exe"
+    "%LOCALAPPDATA%\Programs\Python\Python313\python.exe"
     "%LOCALAPPDATA%\Programs\Python\Python312\python.exe"
     "%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
     "%LOCALAPPDATA%\Programs\Python\Python310\python.exe"
     "%LOCALAPPDATA%\Programs\Python\Python39\python.exe"
     "%LOCALAPPDATA%\Programs\Python\Python38\python.exe"
+    "%LOCALAPPDATA%\Python\pythoncore-3.14-64\python.exe"
+    "%LOCALAPPDATA%\Python\pythoncore-3.13-64\python.exe"
+    "%LOCALAPPDATA%\Python\pythoncore-3.12-64\python.exe"
+    "C:\Python314\python.exe"
+    "C:\Python313\python.exe"
     "C:\Python312\python.exe"
     "C:\Python311\python.exe"
     "C:\Python310\python.exe"
+    "C:\Program Files\Python314\python.exe"
+    "C:\Program Files\Python313\python.exe"
+    "C:\Program Files\Python312\python.exe"
+    "C:\Program Files\Python311\python.exe"
 ) do (
     if exist %%P (
         set PYTHON=%%~P
@@ -28,10 +60,10 @@ for %%P in (
     )
 )
 
-:: Fallback — PATH, но не Microsoft Store
+:: Fallback — where python
 for /f "tokens=*" %%P in ('where python 2^>nul') do (
-    echo %%P | findstr /i "WindowsApps" >nul
-    if errorlevel 1 (
+    "%%P" -c "import sys; sys.exit(0 if sys.version_info >= (3,8) else 1)" >nul 2>&1
+    if not errorlevel 1 (
         set PYTHON=%%P
         goto :found_python
     )
@@ -111,7 +143,7 @@ echo.
 echo   Run via: converter.bat ... or searcher.bat ...
 echo   Or activate: .venv\Scripts\activate
 echo.
-echo   Docs: https://github.com/your-username/filetools
+echo   Docs: https://github.com/anom-developer/filetools
 echo.
 pause
 exit /b 0
@@ -129,7 +161,7 @@ exit /b 1
 :error
 echo.
 echo   If the problem persists, try running as Administrator.
-echo   Report issues: https://github.com/your-username/filetools/issues
+echo   Report issues: https://github.com/anom-developer/filetools/issues
 echo.
 pause
 exit /b 1

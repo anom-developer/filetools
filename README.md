@@ -1,50 +1,55 @@
-# 🛠️ filetools
+# 🛠️ FileTools
 
-[![CI](https://github.com/AceAnomDev/filetools/actions/workflows/ci.yml/badge.svg)](https://github.com/AceAnomDev/filetools/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/AceAnomDev/filetools)](https://github.com/AceAnomDev/filetools/releases/latest)
+[![CI](https://github.com/anom-developer/filetools/actions/workflows/ci.yml/badge.svg)](https://github.com/anom-developer/filetools/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/anom-developer/filetools)](https://github.com/anom-developer/filetools/releases/latest)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-A command-line toolkit with two utilities:
+A high-performance command-line toolkit providing fast file format conversions and recursive multi-threaded search.
 
-| Tool | What it does |
+| Tool | Description |
 |------|-------------|
-| `converter` | Converts files between formats: PNG↔JPG, TXT→PDF, JSON↔CSV and more |
-| `searcher` | Searches files by glob mask or regex with content search and color output |
+| `filetools` | All-in-one unified entrypoint (`filetools converter ...` or `filetools searcher ...`) |
+| `converter` | Converts files between formats: PNG↔JPG↔WebP↔ICO↔BMP↔GIF↔TIFF, TXT→PDF, JSON↔CSV, MD/HTML→TXT |
+| `searcher` | Searches files by glob mask, regex, or content with context lines, size/date filters, and JSON output |
 
 ---
 
-## ⬇️ Installation
+## ⬇️ Download & Installation
 
-### Option 1 — Download binary (no Python needed)
+### Option 1 — Download standalone app (No Python required!)
 
-Go to [Releases](https://github.com/AceAnomDev/filetools/releases/latest) and download for your platform:
+Download pre-compiled binaries from [Releases](https://github.com/anom-developer/filetools/releases/latest):
 
-| Platform | File |
-|----------|------|
-| 🐧 Linux | `filetools-linux-x86_64.tar.gz` |
-| 🖥️ Windows | `filetools-windows-x86_64.zip` |
-| 🍎 macOS | `filetools-macos-x86_64.tar.gz` |
+| Platform | Download | Content |
+|----------|----------|---------|
+| 🖥️ Windows | [`filetools-windows-x86_64.zip`](https://github.com/anom-developer/filetools/releases/latest/download/filetools-windows-x86_64.zip) | `filetools.exe`, `converter.exe`, `searcher.exe` |
+| 🐧 Linux | `filetools-linux-x86_64.tar.gz` | `filetools`, `converter`, `searcher` |
+| 🍎 macOS | `filetools-macos-x86_64.tar.gz` | `filetools`, `converter`, `searcher` |
+
+```cmd
+# Windows (extract zip, then run directly):
+filetools.exe --help
+converter.exe photo.png photo.jpg
+searcher.exe "*.py" .\src
+```
 
 ```bash
-# Linux / macOS
+# Linux / macOS:
 tar -xzf filetools-linux-x86_64.tar.gz
+./filetools --help
 ./converter --help
 ./searcher --help
 ```
 
-```
-# Windows — extract zip, then:
-converter.exe --help
-searcher.exe  --help
-```
+### Option 2 — Automated Installer Script (Python 3.8+)
 
-### Option 2 — Installer script (Python required)
+```cmd
+# Windows (double-click or run in cmd):
+install.bat
+```
 
 ```bash
-# Windows — double-click or run in cmd:
-install.bat
-
 # Linux / macOS:
 bash install.sh
 ```
@@ -53,10 +58,10 @@ bash install.sh
 
 ```bash
 # From GitHub:
-pip install git+https://github.com/your-username/filetools.git
+pip install git+https://github.com/anom-developer/filetools.git
 
 # From source:
-git clone https://github.com/your-username/filetools.git
+git clone https://github.com/anom-developer/filetools.git
 cd filetools
 pip install -e .
 ```
@@ -65,33 +70,36 @@ pip install -e .
 
 ## 🔄 Converter
 
-### Supported conversions
+### Supported formats
 
-| From | To |
-|------|----|
-| PNG  | JPG / JPEG / WebP |
-| JPG / JPEG | PNG / WebP |
-| WebP | PNG / JPG |
-| TXT  | PDF |
-| JSON | CSV |
-| CSV  | JSON |
-| MD   | TXT |
+| Category | Source format | Target format | Notes |
+|----------|---------------|---------------|-------|
+| **Images** | PNG, JPG, JPEG, WebP, BMP, GIF, TIFF, ICO | Any image format | Auto-flattens transparency for JPEG/BMP, multi-res ICO generation |
+| **Documents** | TXT | PDF | Full Unicode & Cyrillic support, auto system font discovery |
+| **Data** | JSON | CSV | Supports arrays, single objects, and nested dict/list structures |
+| **Data** | CSV | JSON | Auto-sniffs delimiter (`,`, `;`, `\t`, `\|`), optional type inference |
+| **Markup** | Markdown (`.md`) | Plain Text (`.txt`) | Strips headings, bold, italic, code blocks, tables, links |
+| **Web** | HTML (`.html`, `.htm`) | Plain Text (`.txt`) | Strips scripts/styles/tags, unescapes HTML entities |
 
-### Usage
+### Examples
 
 ```bash
-# Single file
-converter input.png output.jpg
-converter data.json data.csv
-converter notes.txt notes.pdf
-
-# Whole directory
-converter ./images/ ./output/ --format webp
-
-# Options
+# Images
 converter photo.png photo.jpg --quality 85
-converter report.txt report.pdf --font-size 14
-converter data.csv data.json --encoding utf-8
+converter icon.png favicon.ico
+converter photo.png thumb.png --resize 300x200
+converter banner.jpg banner_half.jpg --resize 50%
+converter scan.png scan_gray.png --grayscale
+converter photo.jpg rotated.jpg --rotate 90
+
+# Batch convert whole directory recursively
+converter ./photos/ ./output/ --format webp --recursive
+
+# Data & Documents
+converter data.json data.csv
+converter report.csv report.json --parse-types
+converter notes.txt notes.pdf --font-size 14
+converter document.html document.txt
 ```
 
 ### Options
@@ -102,144 +110,143 @@ positional:
   output              Output file or directory
 
 optional:
-  -f, --format        Target format for directory conversion (jpg, png, webp…)
-  -q, --quality       Image quality 1-100 (default: 90)
-  --font-size N       Font size for TXT→PDF (default: 12)
-  --encoding ENC      Text encoding (default: utf-8)
-  -v, --verbose       Show per-file progress
-  -h, --help          Show this help
+  -f, --format FMT    Target format when converting directory (jpg, png, webp, ico, csv, txt)
+  -r, --recursive     Recursively convert subdirectories, preserving folder structure
+  -q, --quality N     Quality 1-100 for lossy formats JPEG/WebP (default: 90)
+  --resize WxH|P%     Resize image: WIDTHxHEIGHT (e.g. 800x600) or percentage (e.g. 50%)
+  --rotate DEG        Rotate image clockwise (90, 180, 270)
+  --grayscale         Convert image to grayscale
+  --font-size N       Body font size for TXT → PDF (default: 12)
+  --font PATH         Path to custom .ttf font file for TXT → PDF
+  --encoding ENC      Text file encoding (default: utf-8)
+  --parse-types       Convert strings to numbers/booleans in CSV → JSON
+  --no-overwrite      Skip conversion if target file already exists
+  -v, --verbose       Show detailed progress output
+  -h, --help          Show help message
 ```
 
 ---
 
 ## 🔍 Searcher
 
-### Usage
+### Examples
 
 ```bash
 # By glob mask
 searcher "*.py" ./src
 
-# By regex
+# By regex pattern
 searcher --regex "report_\d{4}\.pdf" ./documents
 
-# Search inside file contents
-searcher --content "TODO" . --ext .py
+# Search by content inside files with context lines
+searcher --content "TODO" . --ext .py -C 2
 
-# Limit recursion depth
-searcher "*.log" /var/log --depth 2
+# Filter by file size (min / max)
+searcher "*.log" /var/log --min-size 1MB --max-size 100MB
 
-# Case-insensitive + save results to file
-searcher "*.txt" . --ignore-case --output results.txt
+# Filter by modification time (e.g. modified in last 7 days)
+searcher "*.py" . --mtime -7d
 
-# Verbose with stats
-searcher "*.json" . --verbose --stats
+# Exclude directories or file patterns
+searcher "*.js" . --exclude "dist/*" "build/*"
+
+# Include hidden files & virtualenvs (skipped by default)
+searcher "*.env" . --hidden
+
+# Output results as JSON for automation
+searcher "*.json" ./config --json
+
+# Only count matching files
+searcher "*.csv" ./data --count
 ```
 
 ### Options
 
 ```
 positional:
-  pattern             Glob mask or regex pattern
-  path                Directory to search (default: .)
+  pattern             Filename mask (e.g. '*.py') or regex. Defaults to '*' if --content is used
+  path                Directory to search (default: current directory)
 
 optional:
   -r, --regex         Treat pattern as regular expression
-  -c, --content TEXT  Search inside file contents
+  -c, --content TEXT  Search inside file contents for text or regex
+  -C, --context N     Show N lines of context before and after each content match
   -e, --ext EXT…      Filter by extension(s): --ext .py .txt
   -d, --depth N       Max recursion depth (default: unlimited)
-  -i, --ignore-case   Case-insensitive matching
-  --no-color          Disable ANSI colors
+  -i, --ignore-case   Case-insensitive matching for filenames and content
+  --min-size SIZE     Minimum file size (e.g. 500B, 10KB, 2MB, 1GB)
+  --max-size SIZE     Maximum file size (e.g. 50MB)
+  --mtime TIME        Filter by time: -7d (last 7 days), +30d (older than 30 days), -24h
+  --exclude PAT…      Exclude files/directories matching patterns
+  -a, --hidden        Include hidden files and folders (e.g. starting with '.')
+  --json              Output results in structured JSON format
+  --count             Print only total count of matching files
+  --no-color          Disable ANSI color formatting
   -o, --output FILE   Save results to file
   -v, --verbose       Show file size and modification date
-  -s, --stats         Print summary statistics
-  -h, --help          Show this help
-```
-
-### Output example
-
-```
-🔍  Searching for '*.py' (mask) in ./project …
-
-  📄 ./project/main.py                    1.2 KB   2024-01-15 10:30
-      L12    # TODO: refactor this
-  📄 ./project/utils/helpers.py           3.4 KB   2024-01-14 09:15
-  📄 ./project/tests/test_main.py         2.1 KB   2024-01-13 18:42
-
-  ──────────────────────────────────────────────────
-  Found: 3 file(s) in 0.008s
+  -s, --stats         Print search statistics at completion
+  -h, --help          Show help message
 ```
 
 ---
 
 ## 🧪 Tests
 
+FileTools includes an automated test suite covering all converters, transforms, filters, and CLI interfaces:
+
 ```bash
 pip install -e ".[dev]"
-pytest                        # run all 35 tests
-pytest tests/test_converter.py
-pytest tests/test_searcher.py
-pytest --cov=converter --cov=searcher
+pytest -v
+pytest --cov=converter --cov=searcher --cov=filetools
 ```
 
 ---
 
-## 📁 Project structure
+## 📁 Project Structure
 
 ```
 filetools/
-├── README.md
-├── CHANGELOG.md
-├── LICENSE
-├── pyproject.toml
-├── requirements.txt
-├── install.bat                ← Windows installer
+├── README.md                  ← Documentation and usage guides
+├── CHANGELOG.md               ← Version changelog
+├── LICENSE                    ← MIT License
+├── pyproject.toml             ← Build configuration & entrypoints
+├── requirements.txt           ← Dependencies
+├── install.bat                ← Windows auto-installer
 ├── install.sh                 ← Linux / macOS installer
-├── create_release.sh          ← publishes GitHub Release via gh CLI
+├── create_release.bat         ← Windows release script
+├── create_release.sh          ← Linux / macOS release script
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml             ← tests on every push/PR
-│       └── release.yml        ← builds binaries + publishes release on tag
-├── converter/
+│       ├── ci.yml             ← CI test matrix (Python 3.8-3.13)
+│       └── release.yml        ← Multi-platform release builder (Win/Linux/Mac)
+├── filetools/                 ← Unified CLI
+│   ├── __init__.py
+│   ├── __main__.py
+│   └── cli.py
+├── converter/                 ← File converter
 │   ├── __init__.py
 │   ├── __main__.py
 │   ├── cli.py
 │   ├── core.py
 │   └── formats/
-│       ├── images.py          ← PNG/JPG/WebP via Pillow
-│       ├── documents.py       ← TXT→PDF via fpdf2
-│       └── data.py            ← JSON↔CSV, MD→TXT
-├── searcher/
+│       ├── images.py          ← Image conversions & transformations
+│       ├── documents.py       ← TXT → PDF with Unicode support
+│       └── data.py            ← JSON, CSV, Markdown, HTML conversions
+├── searcher/                  ← Recursive file searcher
 │   ├── __init__.py
 │   ├── __main__.py
 │   ├── cli.py
-│   ├── core.py                ← os.walk + fnmatch + re
-│   └── output.py              ← ANSI colors, stats
+│   ├── core.py                ← Directory walk, regex, size/time filters
+│   └── output.py              ← Color formatting, context lines, JSON
 └── tests/
     ├── conftest.py
+    ├── test_cli.py
     ├── test_converter.py
     └── test_searcher.py
 ```
 
 ---
 
-## 🤝 Contributing
-
-```bash
-git clone https://github.com/your-username/filetools.git
-cd filetools
-pip install -e ".[dev]"
-pytest
-```
-
-1. Fork the repo
-2. Create a branch: `git checkout -b feature/my-feature`
-3. Commit: `git commit -m "feat: add my feature"`
-4. Push: `git push origin feature/my-feature`
-5. Open a Pull Request
-
----
-
 ## 📄 License
 
-MIT — see [LICENSE](LICENSE).
+MIT License — see [LICENSE](LICENSE).
