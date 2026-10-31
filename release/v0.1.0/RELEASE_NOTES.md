@@ -1,4 +1,4 @@
-# filetools v0.1.0 🎉
+# filetools v1.0.0 🎉
 
 First public release of **FileTools** — a lightweight, zero-config CLI toolkit.
 
