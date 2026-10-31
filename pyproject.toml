@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "filetools-cli"
+version = "0.1.0"
+description = "CLI toolkit: file format converter and recursive file searcher"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+keywords = ["cli", "converter", "searcher", "files", "pdf", "image", "json", "csv"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "Pillow>=10.0.0",
+    "fpdf2>=2.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+]
+
+[project.scripts]
+converter = "converter.cli:main"
+searcher  = "searcher.cli:main"
+
+[project.urls]
+Homepage   = "https://github.com/your-username/filetools"
+Repository = "https://github.com/your-username/filetools"
+Issues     = "https://github.com/your-username/filetools/issues"
+Changelog  = "https://github.com/your-username/filetools/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["converter*", "searcher*"]
+
+[tool.setuptools.package-data]
+"converter" = ["py.typed"]
+"searcher"  = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts   = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["converter", "searcher"]
+omit   = ["*/tests/*", "*/__main__.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
