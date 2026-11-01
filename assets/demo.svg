@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 400" width="880" height="400">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="termBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <filter id="termShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+
+    <style>
+      .mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; }
+      .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+      /* Animation sequence */
+      @keyframes blinkCursor {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+      }
+      .cursor {
+        animation: blinkCursor 0.9s infinite;
+      }
+
+      @keyframes command1Fade {
+        0%, 5% { opacity: 0; transform: translateY(4px); }
+        10%, 100% { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes command2Fade {
+        0%, 35% { opacity: 0; transform: translateY(4px); }
+        42%, 100% { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes command3Fade {
+        0%, 65% { opacity: 0; transform: translateY(4px); }
+        72%, 100% { opacity: 1; transform: translateY(0); }
+      }
+
+      .cmd-1 { animation: command1Fade 12s infinite; }
+      .cmd-2 { animation: command2Fade 12s infinite; }
+      .cmd-3 { animation: command3Fade 12s infinite; }
+    </style>
+  </defs>
+
+  <!-- Terminal Window Frame -->
+  <rect x="20" y="20" width="840" height="360" rx="14" fill="url(#termBg)" stroke="#334155" stroke-width="1.5" filter="url(#termShadow)"/>
+
+  <!-- Title Bar -->
+  <path d="M 20 34 Q 20 20 34 20 L 846 20 Q 860 20 860 34 L 860 56 L 20 56 Z" fill="#1e293b"/>
+  <circle cx="44" cy="38" r="5.5" fill="#ef4444"/>
+  <circle cx="64" cy="38" r="5.5" fill="#f59e0b"/>
+  <circle cx="84" cy="38" r="5.5" fill="#10b981"/>
+  <text x="440" y="42" fill="#94a3b8" font-size="12" class="sans" text-anchor="middle" font-weight="500">Terminal — filetools CLI v1.0.0 (Fast File Converter &amp; Searcher)</text>
+
+  <!-- Terminal Body -->
+  <g class="mono" font-size="12">
+    <!-- Command 1: Image Conversion -->
+    <g class="cmd-1">
+      <text x="44" y="90">
+        <tspan fill="#38bdf8" font-weight="bold">anom@dev</tspan><tspan fill="#64748b">:</tspan><tspan fill="#a855f7">~/projects</tspan><tspan fill="#f8fafc">$ </tspan>
+        <tspan fill="#f1f5f9" font-weight="600">converter photo.png photo.webp --quality 85</tspan>
+      </text>
+      
+      <text x="44" y="112" fill="#94a3b8">  ➔ Reading input image: <tspan fill="#e2e8f0">photo.png</tspan> (1920×1080, RGBA, 2.45 MB)</text>
+      <text x="44" y="132" fill="#10b981" font-weight="bold">
+        <tspan fill="#10b981">  ✔ Converted successfully in 14ms: </tspan>
+        <tspan fill="#34d399">photo.webp</tspan>
+        <tspan fill="#94a3b8"> (418 KB, </tspan>
+        <tspan fill="#f59e0b">saved 83.0%</tspan>
+        <tspan fill="#94a3b8">)</tspan>
+      </text>
+    </g>
+
+    <!-- Command 2: Data Conversion -->
+    <g class="cmd-2">
+      <text x="44" y="170">
+        <tspan fill="#38bdf8" font-weight="bold">anom@dev</tspan><tspan fill="#64748b">:</tspan><tspan fill="#a855f7">~/projects</tspan><tspan fill="#f8fafc">$ </tspan>
+        <tspan fill="#f1f5f9" font-weight="600">converter users.json users.csv</tspan>
+      </text>
+      <text x="44" y="192" fill="#94a3b8">  ➔ Parsed 1,500 JSON records · auto-flattened nested columns</text>
+      <text x="44" y="212" fill="#10b981" font-weight="bold">  ✔ Exported users.csv (14 columns, UTF-8) in 6ms</text>
+    </g>
+
+    <!-- Command 3: Searcher -->
+    <g class="cmd-3">
+      <text x="44" y="250">
+        <tspan fill="#38bdf8" font-weight="bold">anom@dev</tspan><tspan fill="#64748b">:</tspan><tspan fill="#a855f7">~/projects</tspan><tspan fill="#f8fafc">$ </tspan>
+        <tspan fill="#f1f5f9" font-weight="600">searcher "*.py" --content "TODO" --context 1</tspan>
+      </text>
+      <text x="44" y="274" fill="#38bdf8" font-weight="bold">  📁 ./src/converter/core.py</text>
+      <text x="44" y="294" fill="#64748b">     41:   def convert_image(src, dst):</text>
+      <text x="44" y="312" fill="#fbbf24" font-weight="bold">     42:     # TODO: add AVIF format support</text>
+      <text x="44" y="330" fill="#64748b">     43:     return process(src, dst)</text>
+
+      <text x="44" y="356" fill="#10b981" font-weight="bold">
+        <tspan fill="#10b981">  ✔ Found 1 match across 42 files in 3ms </tspan>
+        <tspan fill="#64748b">(--json output supported)</tspan>
+      </text>
+    </g>
+  </g>
+</svg>

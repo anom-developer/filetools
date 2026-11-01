@@ -1,11 +1,26 @@
+<div align="center">
+
+<img src="assets/icon.svg" width="96" height="96" alt="FileTools Logo" />
+
 # 🛠️ FileTools
 
-[![CI](https://github.com/anom-developer/filetools/actions/workflows/ci.yml/badge.svg)](https://github.com/anom-developer/filetools/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/anom-developer/filetools)](https://github.com/anom-developer/filetools/releases/latest)
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://python.org)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+**Lightweight, zero-config command-line toolkit to convert images, documents, and data formats, plus recursive ultra-fast file searching.**
 
-A high-performance command-line toolkit providing fast file format conversions and recursive multi-threaded search.
+[![CI](https://github.com/anom-developer/filetools/actions/workflows/ci.yml/badge.svg)](https://github.com/anom-developer/filetools/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/anom-developer/filetools?style=flat-square)](https://github.com/anom-developer/filetools/releases/latest)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet?style=flat-square)](https://github.com/anom-developer/filetools/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+
+<br/>
+
+<a href="#-converter">
+  <img src="assets/demo.svg" alt="FileTools CLI Terminal Demo" width="100%" />
+</a>
+
+</div>
+
+---
 
 | Tool | Description |
 |------|-------------|
@@ -24,8 +39,8 @@ Download pre-compiled binaries from [Releases](https://github.com/anom-developer
 | Platform | Download | Content |
 |----------|----------|---------|
 | 🖥️ Windows | [`filetools-windows-x86_64.zip`](https://github.com/anom-developer/filetools/releases/latest/download/filetools-windows-x86_64.zip) | `filetools.exe`, `converter.exe`, `searcher.exe` |
-| 🐧 Linux | `filetools-linux-x86_64.tar.gz` | `filetools`, `converter`, `searcher` |
-| 🍎 macOS | `filetools-macos-x86_64.tar.gz` | `filetools`, `converter`, `searcher` |
+| 🐧 Linux | [`filetools-linux-x86_64.tar.gz`](https://github.com/anom-developer/filetools/releases/latest/download/filetools-linux-x86_64.tar.gz) | `filetools`, `converter`, `searcher` |
+| 🍎 macOS | [`filetools-macos-x86_64.tar.gz`](https://github.com/anom-developer/filetools/releases/latest/download/filetools-macos-x86_64.tar.gz) | `filetools`, `converter`, `searcher` |
 
 ```cmd
 # Windows (extract zip, then run directly):
